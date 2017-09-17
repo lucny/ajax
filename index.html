@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="cs">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>Příklad použití AJAX</title>
+
+		<!-- Bootstrap CSS -->
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" media="screen,print">
+  		<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+		<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+		<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+		<!--[if lt IE 9]>
+			<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.2/html5shiv.min.js"></script>
+			<script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+		<![endif]-->
+		<style>
+		</style>
+	</head>
+	<body>
+		<header class="jumbotron text-center">
+			<h1 class="text-uppercase">AJAX</h1>
+		</header>
+		<main>
+			<div class="container">
+				<div class="col-md-8">
+					<div class="panel panel-primary">
+						<div class="panel-heading">
+							<h3 class="panel-title">Co je AJAX?</h3>
+						</div>
+						<div class="panel-body">
+							<p>AJAX (Asynchronous JavaScript and XML) je označení pro technologie vývoje interaktivních webových aplikací, které mění obsah stránky bez opětovného načítání celého webového dokumentu. Toho se dosahuje pomocí JavaScriptu, který získává libovolná data od webového serveru, nejčastěji ve formátu XML. Pro asynchronní výměnu dat s webovým serverem využívá AJAX rozhraní XMLHttpRequest. Jako formát odpovědi mohou být vedle XML použity další formáty včetně JSON, HTML nebo prostého textu.</p>
+							<h4>Výhody</h4>
+							<p>Na rozdíl od klasických webových aplikací poskytují stránky s AJAXem uživatelsky příjemnější prostředí. Pokud například uživatel klikne na tlačítko pro udělení hlasu v nějaké anketě, celá stránka se musí znovu načíst ze serveru, třebaže se na ní jen například aktualizují výsledky hlasování a veškerý zbytek obsahu zůstává stejný. Prostřednictvím AJAXu proběhne odeslání hlasu uživatele na pozadí, server zašle jen ty části stránky, které se změnily, a jen tyto části se uživateli na stránce aktualizují a překreslí. Taktéž nedochází k nepříjemnému efektu, kdy se po dané akci v průběžně načítané stránce postupně přizpůsobují a „za běhu“ formátují a zarovnávají její blokové elementy, obrázky atd. – obtěžující může být i to, že po dané akci uprostřed delší stránky (odscrollované dolů) se nově načtená stránka zobrazí vyscrollovaná nahoru. S AJAXem má uživatel pocit mnohem větší plynulosti práce, která se (zejména u rychlejšího internetového připojení) blíží běžným desktopovým aplikacím. Z toho vyplývá také možnost snížení zátěže na webové servery a síť obecně.</p>
+							<h4>Nevýhody</h4>
+							<p>Mezi nevýhody patří hlavně principiální změna používání webu: webové stránky se chovají jako plnohodnotné aplikace se složitou vnitřní logikou, nikoli jako posloupnost stránek, mezi kterými se lze navigovat i pomocí tlačítek Zpět a Další. Není také možné snadno předat URL stránky, na níž byly provedeny změny prostřednictvím AJAXu. Problémem AJAXových aplikací může být i komunikace se serverem v pozadí aplikace: pokud uživatel neobdrží zřetelný signál (např. animovanou ikonkou), že probíhá odbavení požadavku, může reagovat nevhodně - např. opakovat objednávku vstupenek. Další nevýhodou AJAXu je nutnost používat moderní grafické prohlížeče, které podporují potřebné technologie. Všechny dnešní běžné prohlížeče však tyto technologie alespoň v základu umožňují, problém tak zůstává jen u minoritních prohlížečů typu Lynx nebo na hardwarově slabších zařízeních pro prohlížení, například na (některých) mobilních telefonech a PDA.</p>
+						</div>
+					</div>
+				</div>
+				<div class="col-md-4">
+					<div class="panel panel-danger" id="ajax-get">
+						<div class="panel-heading">
+							<h3 class="panel-title">AJAX: Ukázka použití metody GET</h3>
+						</div>
+						<div class="panel-body">
+							<div id="ajax-text"></div><p><button>Náhodný film</button></p>
+						</div>
+						<div class="panel-footer">
+ 						    <p>
+ 						    	<label for="amount">Hodnocení filmu:</label>
+							  	<input type="text" id="amount" readonly style="border:0; color:#333; font-weight:bold;">
+							</p>
+							<div id="slider-range-max"></div>							
+						</div>
+					</div>
+					<div class="panel panel-success">
+						<div class="panel-heading">
+							<h3 class="panel-title">AJAX: Ukázka použití metody POST</h3>
+						</div>
+						<div class="panel-body">
+							<label for="search">Najdi film podle názvu</label>
+							<input type="text" id="search">
+							<div id="film-links"></div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</main>
+		<footer>
+			<hr>
+			<p class="text-center">&copy; SŠPU Opava 2017</p>
+		</footer>
+		<!-- jQuery -->
+		<script src="//code.jquery.com/jquery.js"></script>
+		<!-- Bootstrap JavaScript -->
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+		<!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+  		<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>		
+ 		<script>
+ 			var idfilm = 1;
+ 			$(function(){
+ 				function getAJAXData() {
+					$.get('get-data.php', {id:idfilm}, function(data,status){
+						data = JSON.parse(data);
+        				//alert("Data: " + data + "\nStatus: " + status);
+	        			$("#ajax-text").html("<h4>"+data.nazev+" ("+data.rok+")</h4><p>"+data.obsah+"</p><p>Hodnocení: "+data.hodnoceni+"</p>");
+	        			$( "#slider-range-max" ).slider({value:data.hodnoceni});
+					    $( "#amount" ).val( data.hodnoceni );
+    				});
+ 				}
+
+ 				$("#ajax-get button").click(function(){
+ 					idfilm = Math.floor(Math.random()*8)+1;
+ 					getAJAXData();
+ 				})
+
+ 				$("#ajax-get button").click();
+
+ 				$("#search").keyup(function(event) {
+ 					$("#film-links").text($(this).val());
+ 					$.post("search-data.php", {nazev: $(this).val()},function(data,status){
+            				links=[];
+ 							if (data) {
+ 								data = JSON.parse(data);
+	            				for (i in data) {
+	            					links.push('<li><a href="view.php?id='+data[i].idfilmy+'">'+data[i].nazev+'</a></li>');
+	            				}
+	            				console.log(links);
+	            				$("#film-links").html('<ul>'+links.join('')+'</ul>');
+ 							}
+        			});
+ 				});
+
+
+ 				$( "#slider-range-max" ).slider({
+	  		        range: "max",
+				    min: 1,
+				    max: 5,
+				    slide: function( event, ui ) {
+				       $( "#amount" ).val( ui.value );
+				       $.post("post-data.php", {id: idfilm, hodnoceni: ui.value},function(data,status){
+            				//alert("Data: " + data + "\nStatus: " + status);
+            				getAJAXData();
+        			   });
+				    }
+    			});
+    			$( "#amount" ).val( $( "#slider-range-max" ).slider( "value" ) );
+
+
+
+    		});
+ 		</script>
+	</body>
+</html>
